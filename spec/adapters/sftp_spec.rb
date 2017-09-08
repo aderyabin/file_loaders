@@ -66,4 +66,14 @@ RSpec.describe FileLoaders::Adapters::Sftp do
       expect(sftp).to have_received(:remove).with("#{processed_dir}/#{file}")
     end
   end
+
+  context "when processed directory is unspecified" do
+    let(:settings) { Settings.new("tmp/purchase_reports_test", nil) }
+
+    it "doesn't move entries to processed directory" do
+      subject.each { true }
+
+      expect(sftp).not_to have_received(:remove)
+    end
+  end
 end

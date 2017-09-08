@@ -38,6 +38,7 @@ module FileLoaders
       end
 
       def move_to_processed(sftp, entry)
+        return if settings.processed_dir.nil?
         processed_path = ::File.join(settings.processed_dir, ::File.basename(entry))
         sftp.remove(processed_path)
         sftp.rename!(entry, processed_path)

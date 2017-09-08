@@ -14,14 +14,14 @@ module FileLoaders
         raise(
           ArgumentError,
           "Processed reports directory #{@processed_dir} does not exists"
-        ) unless Dir.exist?(@processed_dir)
+        ) if @processed_dir && !Dir.exist?(@processed_dir)
       end
 
       def each
         Dir[*paths].entries.each do |entry|
           basename = ::File.basename(entry)
 
-          if yield(entry, entry)
+          if yield(entry, entry) && @processed_dir
             processed_path = "#{@processed_dir}/#{basename}"
             FileUtils.mv entry, processed_path
           end
