@@ -15,13 +15,13 @@ RSpec.describe FileLoaders::Adapters::File do
 
   before do
     FileUtils.mkdir_p(source_dir)
-    FileUtils.mkdir_p(processed_dir)
+    FileUtils.mkdir_p(processed_dir) if processed_dir
 
     files.each { |path| File.write(path, "Content of #{path}") }
   end
 
   after do
-    FileUtils.rm_rf(processed_dir)
+    FileUtils.rm_rf(processed_dir) if processed_dir
     FileUtils.rm_rf(source_dir)
   end
 
@@ -41,6 +41,18 @@ RSpec.describe FileLoaders::Adapters::File do
     )
   end
   # rubocop: enable RSpec/MultipleExpectations
+
+  context "when processed directory is unspecified" do
+    let(:settings) { Settings.new("tmp/purchase_reports_test", nil) }
+
+    it "doesn't move entries to processed directory" do
+      subject.each { true }
+
+      expect(Dir[File.join(source_dir, "*")]).to match_array(
+        FILES.map { |name| File.join(source_dir, name) }
+      )
+    end
+  end
 
   FILES = %w(example.csv example.json).freeze
 end

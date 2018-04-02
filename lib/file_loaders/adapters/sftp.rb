@@ -1,4 +1,5 @@
 require 'net/sftp'
+require 'tmpdir'
 
 module FileLoaders
   module Adapters
@@ -38,13 +39,14 @@ module FileLoaders
       end
 
       def move_to_processed(sftp, entry)
+        return if settings.processed_dir.nil?
         processed_path = ::File.join(settings.processed_dir, ::File.basename(entry))
         sftp.remove(processed_path)
         sftp.rename!(entry, processed_path)
       end
 
       def make_tempdir
-        "/tmp/#{Dir::Tmpname.make_tmpname('sftp', nil)}".tap do |name|
+        Dir::Tmpname.create('sftp') do |name, *|
           FileUtils.mkdir_p name
         end
       end
