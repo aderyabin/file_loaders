@@ -1,4 +1,5 @@
 require 'net/sftp'
+require 'tmpdir'
 
 module FileLoaders
   module Adapters
@@ -44,7 +45,7 @@ module FileLoaders
       end
 
       def make_tempdir
-        "/tmp/#{Dir::Tmpname.make_tmpname('sftp', nil)}".tap do |name|
+        Dir::Tmpname.create('sftp') do |name, *|
           FileUtils.mkdir_p name
         end
       end
